@@ -47,7 +47,7 @@ well-defined intermediate format; the plugin renders it with the Figma Plugin AP
 | Claude (Anthropic) | [console.anthropic.com](https://console.anthropic.com) | `claude-sonnet-4-6` | Paid |
 | Codex (OpenAI) | [platform.openai.com](https://platform.openai.com) | `gpt-4o` | Paid |
 | OpenRouter | [openrouter.ai/keys](https://openrouter.ai/keys) | `meta-llama/llama-3.2-11b-vision-instruct:free` | **Free** models available (`:free`), rate-limited |
-| Gemini (Google) | [aistudio.google.com/apikey](https://aistudio.google.com/apikey) | `gemini-2.0-flash` | **Free** tier, rate-limited |
+| Gemini (Google) | [aistudio.google.com/apikey](https://aistudio.google.com/apikey) | `gemini-2.5-flash` | **Free** tier, rate-limited |
 
 The model field is editable. Free model IDs in particular change over time — if a
 default is unavailable, paste a current vision-capable model name for that provider.

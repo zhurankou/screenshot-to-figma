@@ -26,7 +26,7 @@ const DEFAULT_MODEL: Record<AiProvider, string> = {
   anthropic: "claude-sonnet-4-6",
   openai: "gpt-4o",
   openrouter: "meta-llama/llama-3.2-11b-vision-instruct:free",
-  gemini: "gemini-2.0-flash"
+  gemini: "gemini-2.5-flash"
 };
 const KEY_PLACEHOLDER: Record<AiProvider, string> = {
   anthropic: "sk-ant-...",

@@ -10,9 +10,8 @@
     "allowedDomains": [
       "https://api.anthropic.com",
       "https://api.openai.com",
-      "https://openrouter.ai",
       "https://generativelanguage.googleapis.com"
     ],
-    "reasoning": "Sends the chosen screenshot to the selected AI provider (Anthropic, OpenAI, OpenRouter, or Google Gemini) to reconstruct it as a UI schema. Uses the API key you provide; nothing else is sent."
+    "reasoning": "Sends the chosen screenshot to the selected AI provider (Anthropic, OpenAI, or Google Gemini) to reconstruct it as a UI schema. Uses the API key you provide; nothing else is sent."
   }
 }

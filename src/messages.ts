@@ -32,7 +32,7 @@ export interface CreateFrameMessage {
 }
 
 /** Which AI provider performs the reconstruction. */
-export type AiProvider = "anthropic" | "openai" | "openrouter" | "gemini";
+export type AiProvider = "anthropic" | "openai" | "gemini";
 
 /** UI -> plugin: persist a provider's API key in clientStorage (local to this machine). */
 export interface SaveApiKeyMessage {

@@ -4,7 +4,6 @@ import { buildReconstructionPrompt } from "../prompt/buildReconstructionPrompt";
 const ANTHROPIC_URL = "https://api.anthropic.com/v1/messages";
 const ANTHROPIC_VERSION = "2023-06-01";
 const OPENAI_URL = "https://api.openai.com/v1/chat/completions";
-const OPENROUTER_URL = "https://openrouter.ai/api/v1/chat/completions";
 const GEMINI_BASE = "https://generativelanguage.googleapis.com/v1beta/models";
 const MAX_TOKENS = 8192;
 
@@ -101,26 +100,16 @@ async function callAnthropic(params: ReconstructParams, prompt: string): Promise
 interface ChatOptions {
   url: string;
   label: string;
-  /** OpenAI uses max_completion_tokens; OpenRouter normalizes max_tokens. */
   tokenField: "max_tokens" | "max_completion_tokens";
-  extraHeaders?: Record<string, string>;
 }
 
-/**
- * OpenAI-style Chat Completions request. Used for both OpenAI and OpenRouter,
- * which share the same wire format (and both allow browser calls with a bearer token).
- */
+/** OpenAI Chat Completions request (browser calls allowed with a bearer token). */
 async function callChatCompletions(opts: ChatOptions, params: ReconstructParams, prompt: string): Promise<string> {
   const dataUrl = `data:${params.mediaType};base64,${params.base64}`;
   const headers: Record<string, string> = {
     "content-type": "application/json",
     authorization: `Bearer ${params.apiKey}`
   };
-  if (opts.extraHeaders) {
-    for (const name in opts.extraHeaders) {
-      headers[name] = opts.extraHeaders[name];
-    }
-  }
 
   const body: Record<string, unknown> = {
     model: params.model,
@@ -194,13 +183,6 @@ export async function reconstruct(params: ReconstructParams): Promise<string> {
   switch (params.provider) {
     case "openai":
       text = await callChatCompletions({ url: OPENAI_URL, label: "OpenAI", tokenField: "max_completion_tokens" }, params, prompt);
-      break;
-    case "openrouter":
-      text = await callChatCompletions(
-        { url: OPENROUTER_URL, label: "OpenRouter", tokenField: "max_tokens", extraHeaders: { "X-Title": "Screenshot to Figma" } },
-        params,
-        prompt
-      );
       break;
     case "gemini":
       text = await callGemini(params, prompt);

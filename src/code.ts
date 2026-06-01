@@ -5,7 +5,6 @@ import { validateSchema } from "./schema/validateSchema";
 const STORAGE_KEYS: Record<AiProvider, string> = {
   anthropic: "anthropic-api-key",
   openai: "openai-api-key",
-  openrouter: "openrouter-api-key",
   gemini: "gemini-api-key"
 };
 
@@ -46,7 +45,7 @@ figma.ui.onmessage = async (message: UiToPluginMessage) => {
   }
 
   if (message.type === "GET_API_KEYS") {
-    const keys: Record<AiProvider, string> = { anthropic: "", openai: "", openrouter: "", gemini: "" };
+    const keys: Record<AiProvider, string> = { anthropic: "", openai: "", gemini: "" };
     const providers = Object.keys(STORAGE_KEYS) as AiProvider[];
     await Promise.all(
       providers.map(async (provider) => {

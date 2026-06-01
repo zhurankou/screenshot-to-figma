@@ -1,0 +1,340 @@
+:root {
+  color-scheme: light;
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  color: var(--figma-color-text, #1f2937);
+  background: var(--figma-color-bg, #ffffff);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+}
+
+.app {
+  display: grid;
+  gap: 16px;
+  padding: 18px;
+}
+
+.header h1 {
+  margin: 0 0 6px;
+  font-size: 18px;
+  line-height: 24px;
+  font-weight: 700;
+}
+
+.header p,
+.upload p,
+.status p,
+.hint {
+  margin: 0;
+  color: var(--figma-color-text-secondary, #6b7280);
+  font-size: 12px;
+  line-height: 18px;
+}
+
+.step {
+  display: grid;
+  gap: 8px;
+}
+
+.stepLabel {
+  margin: 0;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--figma-color-text-secondary, #6b7280);
+}
+
+.preview {
+  max-width: 100%;
+  max-height: 180px;
+  border-radius: 6px;
+  border: 1px solid var(--figma-color-border, #e5e7eb);
+  object-fit: contain;
+}
+
+.upload {
+  display: grid;
+  place-items: center;
+  gap: 10px;
+  min-height: 142px;
+  padding: 18px;
+  border: 1px dashed var(--figma-color-border, #cbd5e1);
+  border-radius: 8px;
+  background: var(--figma-color-bg-secondary, #f8fafc);
+  text-align: center;
+}
+
+.upload.dragging {
+  border-color: #2563eb;
+  background: #eff6ff;
+}
+
+.uploadButton,
+.primary,
+.secondary {
+  min-height: 36px;
+  border: 0;
+  border-radius: 6px;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 650;
+  cursor: pointer;
+}
+
+.uploadButton,
+.secondary {
+  padding: 0 14px;
+  color: var(--figma-color-text, #111827);
+  background: var(--figma-color-bg, #ffffff);
+  border: 1px solid var(--figma-color-border, #d1d5db);
+}
+
+.secondary {
+  width: 100%;
+}
+
+.linkButton {
+  border: 0;
+  background: none;
+  padding: 0;
+  font: inherit;
+  font-size: 12px;
+  color: #2563eb;
+  cursor: pointer;
+}
+
+.inlineActions {
+  display: flex;
+  gap: 14px;
+}
+
+.schemaInput {
+  width: 100%;
+  padding: 8px 10px;
+  border: 1px solid var(--figma-color-border, #d1d5db);
+  border-radius: 6px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 11px;
+  line-height: 16px;
+  color: var(--figma-color-text, #111827);
+  background: var(--figma-color-bg, #ffffff);
+  resize: vertical;
+}
+
+.actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.advanced {
+  border-top: 1px solid var(--figma-color-border, #e5e7eb);
+  padding-top: 12px;
+}
+
+.advanced summary {
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 650;
+  color: var(--figma-color-text-secondary, #6b7280);
+}
+
+.advanced .hint {
+  margin: 8px 0;
+}
+
+.advanced .schemaInput {
+  margin-bottom: 8px;
+}
+
+.advanced .secondary {
+  width: 100%;
+}
+
+.toggles {
+  display: grid;
+  gap: 10px;
+}
+
+.toggles label {
+  display: grid;
+  grid-template-columns: 18px 1fr;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  line-height: 18px;
+}
+
+.toggles input {
+  margin: 0;
+}
+
+.field {
+  display: grid;
+  gap: 6px;
+  font-size: 12px;
+  line-height: 18px;
+}
+
+.field span {
+  color: var(--figma-color-text-secondary, #6b7280);
+}
+
+.field input,
+.field textarea,
+.field select {
+  width: 100%;
+  min-height: 34px;
+  padding: 8px 10px;
+  border: 1px solid var(--figma-color-border, #d1d5db);
+  border-radius: 6px;
+  font: inherit;
+  color: var(--figma-color-text, #111827);
+  background: var(--figma-color-bg, #ffffff);
+}
+
+.field textarea {
+  resize: vertical;
+  line-height: 16px;
+}
+
+.primary {
+  width: 100%;
+  padding: 0 16px;
+  color: #ffffff;
+  background: #2563eb;
+}
+
+.primary:disabled {
+  cursor: not-allowed;
+  background: #94a3b8;
+}
+
+.status {
+  min-height: 120px;
+}
+
+.progress {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.progress span {
+  width: 16px;
+  height: 16px;
+  border: 2px solid #cbd5e1;
+  border-top-color: #2563eb;
+  border-radius: 999px;
+  animation: spin 0.9s linear infinite;
+}
+
+.summary {
+  display: grid;
+  gap: 10px;
+  padding: 12px;
+  border: 1px solid var(--figma-color-border, #e5e7eb);
+  border-radius: 8px;
+  background: var(--figma-color-bg-secondary, #f9fafb);
+}
+
+.summary h2 {
+  margin: 0;
+  font-size: 13px;
+  line-height: 18px;
+}
+
+.summary dl {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 6px 12px;
+  margin: 0;
+  font-size: 12px;
+}
+
+.summary dt {
+  color: var(--figma-color-text-secondary, #6b7280);
+}
+
+.summary dd {
+  margin: 0;
+  font-weight: 650;
+}
+
+.summary h2.bad {
+  color: #991b1b;
+}
+
+.counts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 14px;
+  margin: 0;
+  padding-left: 18px;
+  font-size: 12px;
+}
+
+.issues {
+  margin: 4px 0 0;
+  padding-left: 18px;
+  font-size: 12px;
+  line-height: 17px;
+}
+
+.issues code,
+.counts code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 11px;
+}
+
+.warn {
+  margin: 6px 0 0;
+  color: #92400e;
+  font-size: 12px;
+}
+
+.swatches {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.swatch {
+  width: 22px;
+  height: 22px;
+  border: 1px solid rgba(0, 0, 0, 0.14);
+  border-radius: 5px;
+}
+
+.limitations {
+  margin: 0;
+  padding-left: 18px;
+  color: var(--figma-color-text-secondary, #6b7280);
+  font-size: 12px;
+  line-height: 17px;
+}
+
+.error {
+  padding: 10px;
+  border: 1px solid #fecaca;
+  border-radius: 8px;
+  color: #991b1b;
+  background: #fef2f2;
+}
+
+.hidden {
+  display: none;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

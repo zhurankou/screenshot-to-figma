@@ -1,0 +1,29 @@
+{
+  "name": "screenshot-to-figma",
+  "version": "0.1.0",
+  "description": "Import AI-generated UI schemas as editable Figma layers from screenshots.",
+  "type": "module",
+  "private": false,
+  "license": "MIT",
+  "scripts": {
+    "dev": "node scripts/build.mjs --watch",
+    "build": "node scripts/build.mjs",
+    "samples": "node scripts/generate-samples.mjs",
+    "test": "vitest run",
+    "lint": "tsc --noEmit"
+  },
+  "keywords": [
+    "figma",
+    "figma-plugin",
+    "screenshot",
+    "design-tools",
+    "ai",
+    "ui-schema"
+  ],
+  "devDependencies": {
+    "@figma/plugin-typings": "^1.107.0",
+    "esbuild": "^0.25.0",
+    "typescript": "^5.8.2",
+    "vitest": "^4.1.8"
+  }
+}

@@ -1,0 +1,41 @@
+<svg width="1920" height="960" viewBox="0 0 1920 960" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1920" height="960" fill="#0B1220"/>
+  <rect width="1920" height="960" fill="url(#bg)"/>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1920" y2="960" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#111827"/>
+      <stop offset="1" stop-color="#1E293B"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Left: copy -->
+  <text x="160" y="380" fill="#FFFFFF" font-family="Inter, Arial, sans-serif" font-size="92" font-weight="800">Screenshot to Figma</text>
+  <text x="160" y="470" fill="#93C5FD" font-family="Inter, Arial, sans-serif" font-size="44" font-weight="600">Rebuild UI screenshots as editable layers</text>
+  <text x="160" y="540" fill="#94A3B8" font-family="Inter, Arial, sans-serif" font-size="34" font-weight="400">Powered by Claude or OpenAI · Bring your own key</text>
+
+  <!-- Right: screenshot -> frame illustration -->
+  <g transform="translate(1140 250)">
+    <!-- screenshot (faded) -->
+    <rect x="0" y="40" width="300" height="380" rx="20" fill="#334155" stroke="#475569" stroke-width="3"/>
+    <rect x="36" y="86" width="150" height="22" rx="11" fill="#64748B"/>
+    <rect x="36" y="130" width="220" height="18" rx="9" fill="#64748B"/>
+    <rect x="36" y="170" width="120" height="120" rx="12" fill="#64748B"/>
+    <rect x="170" y="170" width="94" height="120" rx="12" fill="#64748B"/>
+
+    <!-- arrow -->
+    <path d="M330 230 H430" stroke="#2563EB" stroke-width="8" stroke-linecap="round"/>
+    <path d="M408 208 L438 230 L408 252" stroke="#2563EB" stroke-width="8" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+
+    <!-- editable frame -->
+    <rect x="470" y="40" width="300" height="380" rx="20" fill="#FFFFFF" stroke="#2563EB" stroke-width="4"/>
+    <rect x="506" y="86" width="150" height="24" rx="12" fill="#111827"/>
+    <rect x="506" y="132" width="220" height="16" rx="8" fill="#CBD5E1"/>
+    <rect x="506" y="170" width="120" height="120" rx="12" fill="#E5E7EB"/>
+    <rect x="640" y="170" width="94" height="120" rx="12" fill="#DBEAFE"/>
+    <rect x="506" y="320" width="160" height="48" rx="10" fill="#2563EB"/>
+    <circle cx="470" cy="40" r="7" fill="#2563EB"/>
+    <circle cx="770" cy="40" r="7" fill="#2563EB"/>
+    <circle cx="470" cy="420" r="7" fill="#2563EB"/>
+    <circle cx="770" cy="420" r="7" fill="#2563EB"/>
+  </g>
+</svg>

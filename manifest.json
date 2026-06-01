@@ -1,0 +1,13 @@
+{
+  "name": "Screenshot to Figma",
+  "id": "screenshot-to-figma",
+  "api": "1.0.0",
+  "main": "dist/code.js",
+  "ui": "dist/ui.html",
+  "editorType": ["figma"],
+  "documentAccess": "dynamic-page",
+  "networkAccess": {
+    "allowedDomains": ["https://api.anthropic.com", "https://api.openai.com"],
+    "reasoning": "Sends the chosen screenshot to the Claude (Anthropic) or Codex (OpenAI) API to reconstruct it as a UI schema. Uses the API key you provide; nothing else is sent."
+  }
+}

@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Screenshot to Figma</title>
+    <link rel="stylesheet" href="./styles.css">
+  </head>
+  <body>
+    <main class="app">
+      <header class="header">
+        <h1>Screenshot to Figma</h1>
+        <p>Rebuild UI screenshots as editable Figma layers using AI-generated structure.</p>
+      </header>
+
+      <section class="upload" id="dropZone">
+        <input id="fileInput" type="file" accept="image/png,image/jpeg" hidden>
+        <img id="preview" class="preview hidden" alt="Screenshot preview">
+        <button class="uploadButton" id="chooseFile" type="button">Choose screenshot</button>
+        <p id="fileMeta">Drag a PNG or JPG here, or choose a file.</p>
+      </section>
+
+      <label class="field">
+        <span>AI provider</span>
+        <select id="provider">
+          <option value="anthropic" selected>Claude (Anthropic)</option>
+          <option value="openai">Codex (OpenAI)</option>
+        </select>
+      </label>
+
+      <label class="field">
+        <span>API key</span>
+        <input id="apiKey" type="password" autocomplete="off" placeholder="sk-ant-...">
+      </label>
+      <p class="hint" id="keyHint">
+        Stored locally on this machine. Get one at console.anthropic.com. Calls are billed to your key.
+      </p>
+
+      <label class="field">
+        <span>Model</span>
+        <input id="model" type="text" autocomplete="off" spellcheck="false" value="claude-sonnet-4-6">
+      </label>
+
+      <button class="primary" id="recreate" type="button" disabled>Recreate in Figma</button>
+
+      <details class="advanced">
+        <summary>Advanced: paste schema (no API key)</summary>
+        <p class="hint">
+          Paste a UI schema JSON (e.g. from Claude Code, the Codex CLI, or
+          <code>samples/dashboard.json</code>) to build a frame with no API call.
+          Uploads the screenshot as a locked reference if one is selected.
+        </p>
+        <textarea
+          id="schemaInput"
+          class="schemaInput"
+          rows="8"
+          spellcheck="false"
+          placeholder='{ "name": "...", "width": 1440, "height": 900, "nodes": [ ... ] }'
+        ></textarea>
+        <button class="secondary" id="createFromSchema" type="button">Create from schema</button>
+      </details>
+
+      <section class="status" aria-live="polite">
+        <div class="progress hidden" id="progress">
+          <span></span>
+          <p id="progressText">Working…</p>
+        </div>
+        <p class="error hidden" id="error"></p>
+        <div class="summary hidden" id="summary"></div>
+      </section>
+    </main>
+    <script type="module" src="./ui.ts"></script>
+  </body>
+</html>

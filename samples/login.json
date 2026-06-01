@@ -1,0 +1,86 @@
+{
+  "name": "Login Screen",
+  "width": 480,
+  "height": 640,
+  "background": "#FFFFFF",
+  "nodes": [
+    {
+      "type": "iconPlaceholder",
+      "name": "Logo",
+      "x": 208,
+      "y": 64,
+      "width": 64,
+      "height": 64,
+      "cornerRadius": 16
+    },
+    {
+      "type": "text",
+      "name": "Heading",
+      "x": 64,
+      "y": 152,
+      "width": 352,
+      "height": 36,
+      "text": "Welcome back",
+      "fontSize": 28,
+      "fontWeight": 700,
+      "color": "#111827",
+      "textAlign": "center"
+    },
+    {
+      "type": "rectangle",
+      "name": "Email field",
+      "x": 64,
+      "y": 232,
+      "width": 352,
+      "height": 48,
+      "fill": "#FFFFFF",
+      "stroke": "#D1D5DB",
+      "strokeWidth": 1,
+      "cornerRadius": 8
+    },
+    {
+      "type": "rectangle",
+      "name": "Password field",
+      "x": 64,
+      "y": 296,
+      "width": 352,
+      "height": 48,
+      "fill": "#FFFFFF",
+      "stroke": "#D1D5DB",
+      "strokeWidth": 1,
+      "cornerRadius": 8
+    },
+    {
+      "type": "rectangle",
+      "name": "Sign in button",
+      "x": 64,
+      "y": 372,
+      "width": 352,
+      "height": 48,
+      "fill": "#2563EB",
+      "cornerRadius": 8
+    },
+    {
+      "type": "text",
+      "name": "Sign in label",
+      "x": 64,
+      "y": 386,
+      "width": 352,
+      "height": 20,
+      "text": "Sign in",
+      "fontSize": 15,
+      "fontWeight": 600,
+      "color": "#FFFFFF",
+      "textAlign": "center"
+    },
+    {
+      "type": "divider",
+      "name": "Separator",
+      "x": 64,
+      "y": 452,
+      "width": 352,
+      "height": 1,
+      "fill": "#E5E7EB"
+    }
+  ]
+}

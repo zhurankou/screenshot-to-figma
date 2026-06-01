@@ -54,16 +54,6 @@ The model is chosen automatically from the provider's live model list. The
 "fallback model" above is only used if that lookup can't run (offline, key
 scope, etc.).
 
-### Manual / offline alternative (no API key)
-
-The plugin also has an **Advanced: paste schema** section. Paste a UI schema
-JSON and click **Create from schema** to render a frame with no API call —
-useful if you don't have a key, or if you generated the schema elsewhere (Claude
-Code, the Codex CLI, or by hand). Use
-[`samples/reconstruction-prompt.txt`](samples/reconstruction-prompt.txt) to
-produce one, or start from [`samples/`](samples/). If a screenshot is selected,
-it's still added as the locked reference layer.
-
 ## The UI schema
 
 ```json
@@ -126,14 +116,14 @@ All coordinates are pixels. Colors must be hex strings (`#RGB`, `#RRGGBB`, or `#
 
 ### Samples
 
-Ready-to-paste examples live in [`samples/`](samples/):
+Reference examples of the schema live in [`samples/`](samples/):
 
 - `samples/dashboard.json`
 - `samples/login.json`
-- `samples/reconstruction-prompt.txt` — the exact prompt the plugin copies.
+- `samples/reconstruction-prompt.txt` — the prompt the plugin sends to the AI.
 
 These are generated from the source of truth in `src/` via `npm run samples`,
-so they always match the schema the plugin accepts.
+so they always match the schema the plugin produces and validates.
 
 ## Validation
 

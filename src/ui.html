@@ -39,23 +39,6 @@
 
       <button class="primary" id="recreate" type="button" disabled>Recreate in Figma</button>
 
-      <details class="advanced">
-        <summary>Advanced: paste schema (no API key)</summary>
-        <p class="hint">
-          Paste a UI schema JSON (e.g. from Claude Code, the Codex CLI, or
-          <code>samples/dashboard.json</code>) to build a frame with no API call.
-          Uploads the screenshot as a locked reference if one is selected.
-        </p>
-        <textarea
-          id="schemaInput"
-          class="schemaInput"
-          rows="8"
-          spellcheck="false"
-          placeholder='{ "name": "...", "width": 1440, "height": 900, "nodes": [ ... ] }'
-        ></textarea>
-        <button class="secondary" id="createFromSchema" type="button">Create from schema</button>
-      </details>
-
       <section class="status" aria-live="polite">
         <div class="progress hidden" id="progress">
           <span></span>

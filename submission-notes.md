@@ -1,7 +1,6 @@
 # Submission notes for Figma review
 
-Paste this into the "Notes for reviewers" field when publishing. It lets the
-reviewer verify the plugin with **no API key**.
+Paste this into the "Notes for reviewers" field when publishing.
 
 ---
 
@@ -10,41 +9,30 @@ reviewer verify the plugin with **no API key**.
 Reconstructs a UI screenshot into editable Figma layers (frames, rectangles,
 text, placeholders), keeping the original screenshot as a locked reference layer.
 
-**Testing without an API key**
+**How to test it**
 
-The "Recreate in Figma" button calls the Anthropic or OpenAI API using the
-user's own key, so it isn't testable without one. To verify the core behavior
-without a key, use the keyless path:
+The "Recreate in Figma" button calls an AI provider's API to reconstruct the
+screenshot, authenticated with the user's own API key. To let you test it at no
+cost, use the **Gemini free tier**:
 
-1. Open the plugin.
-2. Expand **"Advanced: paste schema (no API key)"** below the Recreate button.
-3. Paste the JSON below into the text area.
-4. Click **Create from schema**.
+1. Create a free key at https://aistudio.google.com/apikey (no billing required), or
+   use the temporary key below (we will revoke it after review).
+2. Open the plugin.
+3. Select provider **Gemini (Google, free tier)** and paste the key.
+4. Click **Choose screenshot**, pick any UI screenshot (e.g. a PNG of a web page).
+5. Click **Recreate in Figma**.
 
-A frame named "Analytics Dashboard" should appear on the canvas with a sidebar,
-title, metric card, value text, and a chart placeholder — all editable. No
-network request is made on this path.
+A frame matching the screenshot should appear on the canvas as editable layers,
+with the original screenshot behind it as a locked reference layer. The plugin
+auto-selects an available vision model, so no model needs to be entered.
 
-```json
-{
-  "name": "Analytics Dashboard",
-  "width": 1440,
-  "height": 900,
-  "background": "#F9FAFB",
-  "nodes": [
-    { "type": "frame", "name": "Sidebar", "x": 0, "y": 0, "width": 280, "height": 900, "fill": "#111827" },
-    { "type": "text", "name": "Page title", "x": 320, "y": 48, "width": 400, "height": 40, "text": "Overview", "fontSize": 32, "fontWeight": 700, "color": "#111827" },
-    { "type": "rectangle", "name": "Metric card", "x": 320, "y": 120, "width": 360, "height": 160, "fill": "#FFFFFF", "stroke": "#E5E7EB", "cornerRadius": 16 },
-    { "type": "text", "name": "Metric value", "x": 344, "y": 176, "width": 240, "height": 48, "text": "12,480", "fontSize": 40, "fontWeight": 700, "color": "#111827" },
-    { "type": "imagePlaceholder", "name": "Chart", "x": 712, "y": 120, "width": 688, "height": 320, "cornerRadius": 16 }
-  ]
-}
-```
+> Temporary Gemini API key for review: `<paste a free-tier key here, then revoke after approval>`
 
 **Data & privacy**
 
-- Screenshots are sent only to the provider the user selects (Anthropic or
-  OpenAI), authenticated with the user's own API key.
+- The screenshot is sent only to the provider the user selects (Anthropic,
+  OpenAI, or Google Gemini), authenticated with the user's own API key.
 - The API key is stored only in Figma `clientStorage` on the user's machine.
 - No backend, no account, no analytics; nothing else is transmitted.
-- Declared network domains: `api.anthropic.com`, `api.openai.com`.
+- Declared network domains: `api.anthropic.com`, `api.openai.com`,
+  `generativelanguage.googleapis.com`.

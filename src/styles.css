@@ -115,48 +115,12 @@ body {
   gap: 14px;
 }
 
-.schemaInput {
-  width: 100%;
-  padding: 8px 10px;
-  border: 1px solid var(--figma-color-border, #d1d5db);
-  border-radius: 6px;
-  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-  font-size: 11px;
-  line-height: 16px;
-  color: var(--figma-color-text, #111827);
-  background: var(--figma-color-bg, #ffffff);
-  resize: vertical;
-}
-
 .actions {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 10px;
 }
 
-.advanced {
-  border-top: 1px solid var(--figma-color-border, #e5e7eb);
-  padding-top: 12px;
-}
-
-.advanced summary {
-  cursor: pointer;
-  font-size: 12px;
-  font-weight: 650;
-  color: var(--figma-color-text-secondary, #6b7280);
-}
-
-.advanced .hint {
-  margin: 8px 0;
-}
-
-.advanced .schemaInput {
-  margin-bottom: 8px;
-}
-
-.advanced .secondary {
-  width: 100%;
-}
 
 .toggles {
   display: grid;

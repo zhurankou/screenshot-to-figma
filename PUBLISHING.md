@@ -44,28 +44,20 @@ local and published versions stay in sync.
 5. After approval you control the public listing; future updates go through
    **Publish new release** with release notes.
 
-## 4. Make it reviewable WITHOUT an API key (important)
+## 4. Make it reviewable (important)
 
-Figma's reviewer runs the plugin and has no Anthropic/OpenAI key, so the auto
-flow alone is untestable. Mitigations, in order of preference:
+Figma's reviewer runs the plugin and has no API key, so the auto flow needs a key
+to test. The plugin uses the user's own key, so give the reviewer one to use:
 
-1. **Add a keyless "paste schema" path** (recommended). The plugin can accept a
-   pasted UI schema and render it with no API call. This is also the no-key user
-   path and the Claude Code / Codex-CLI workflow. (Ask the maintainer to enable
-   the schema-paste escape hatch if it isn't in the build yet.)
-2. **Give the reviewer a test schema** in the submission notes (see
-   `samples/dashboard.json`) and step-by-step instructions.
-3. **Provide a temporary, low-limit API key** in the private review notes (revoke
-   after approval). Least preferred — costs money and is easy to forget to revoke.
+- **Use the Gemini free tier** (recommended). Create a free key at
+  https://aistudio.google.com/apikey (no billing) and include it in the private
+  review notes, or tell the reviewer to make their own. Free, so there's no cost
+  risk, but still revoke it after approval.
+- The ready-to-paste reviewer note lives in `submission-notes.md` — drop a
+  temporary key into it before submitting.
 
-Suggested reviewer note:
-
-> This plugin reconstructs a screenshot into editable Figma layers. The "Recreate"
-> step calls the Anthropic or OpenAI API with the user's own key. To test without
-> a key, use the "Paste schema" option and paste the contents of
-> `samples/dashboard.json`, then click Create — it renders the frame with no
-> network call. Screenshots are only sent to the provider the user selects, using
-> the user's own key; nothing is sent anywhere else.
+The model is auto-selected from the provider, so the reviewer only picks the
+provider, pastes the key, chooses a screenshot, and clicks Recreate.
 
 ## 5. Listing copy (paste-ready)
 

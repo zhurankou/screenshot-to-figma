@@ -11,8 +11,6 @@ const providerSelect = document.querySelector<HTMLSelectElement>("#provider")!;
 const apiKeyInput = document.querySelector<HTMLInputElement>("#apiKey")!;
 const keyHint = document.querySelector<HTMLElement>("#keyHint")!;
 const recreate = document.querySelector<HTMLButtonElement>("#recreate")!;
-const schemaInput = document.querySelector<HTMLTextAreaElement>("#schemaInput")!;
-const createFromSchema = document.querySelector<HTMLButtonElement>("#createFromSchema")!;
 const progress = document.querySelector<HTMLElement>("#progress")!;
 const progressText = document.querySelector<HTMLElement>("#progressText")!;
 const errorEl = document.querySelector<HTMLElement>("#error")!;
@@ -229,39 +227,6 @@ async function run(): Promise<void> {
   }
 }
 
-/** Keyless path: render a pasted schema directly, no API call. */
-function buildFromPastedSchema(): void {
-  const text = schemaInput.value.trim();
-  if (!text) {
-    showError("Paste a UI schema JSON first.");
-    return;
-  }
-  const result = validateSchema(text);
-  if (!result.valid || !result.schema) {
-    const detail = result.errors
-      .slice(0, 4)
-      .map((e) => `${e.path}: ${e.message}`)
-      .join("; ");
-    showError(`Invalid schema: ${detail}`);
-    return;
-  }
-
-  clearError();
-  summaryEl.classList.add("hidden");
-  showProgress("Building Figma layers…");
-  parent.postMessage(
-    {
-      pluginMessage: {
-        type: "CREATE_FRAME",
-        schema: result.schema,
-        options: OPTIONS,
-        imageBytes: imageBytes || undefined
-      }
-    },
-    "*"
-  );
-}
-
 // --- Wiring -----------------------------------------------------------------
 
 chooseFile.addEventListener("click", () => fileInput.click());
@@ -295,7 +260,6 @@ apiKeyInput.addEventListener("input", () => {
   updateButton();
 });
 recreate.addEventListener("click", () => void run());
-createFromSchema.addEventListener("click", buildFromPastedSchema);
 
 window.onmessage = (event: MessageEvent<{ pluginMessage: PluginToUiMessage }>) => {
   const message = event.data.pluginMessage;

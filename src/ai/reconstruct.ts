@@ -5,7 +5,7 @@ const ANTHROPIC_URL = "https://api.anthropic.com/v1/messages";
 const ANTHROPIC_VERSION = "2023-06-01";
 const OPENAI_URL = "https://api.openai.com/v1/chat/completions";
 const GEMINI_BASE = "https://generativelanguage.googleapis.com/v1beta/models";
-const MAX_TOKENS = 8192;
+const MAX_TOKENS = 16384;
 
 export interface ReconstructParams {
   provider: AiProvider;
@@ -31,7 +31,10 @@ export function extractJson(text: string): string {
   if (start === -1 || end === -1 || end < start) {
     throw new Error("The model's response did not contain a JSON object.");
   }
-  return body.slice(start, end + 1);
+  // Strip structural trailing commas (a common LLM mistake): `,]` / `, }` -> `]` / `}`.
+  // Only matches a comma followed by whitespace then a closer, so it won't touch
+  // commas inside strings.
+  return body.slice(start, end + 1).replace(/,(\s*[}\]])/g, "$1");
 }
 
 async function errorDetail(response: Response): Promise<string> {
@@ -113,6 +116,8 @@ async function callChatCompletions(opts: ChatOptions, params: ReconstructParams,
 
   const body: Record<string, unknown> = {
     model: params.model,
+    // Ask for strict JSON so the model can't wrap it in prose or markdown.
+    response_format: { type: "json_object" },
     messages: [
       {
         role: "user",
@@ -151,7 +156,7 @@ async function callGemini(params: ReconstructParams, prompt: string): Promise<st
           ]
         }
       ],
-      generationConfig: { maxOutputTokens: MAX_TOKENS }
+      generationConfig: { maxOutputTokens: MAX_TOKENS, responseMimeType: "application/json" }
     },
     "Gemini"
   );

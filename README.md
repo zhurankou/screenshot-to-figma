@@ -37,19 +37,22 @@ well-defined intermediate format; the plugin renders it with the Figma Plugin AP
 1. **Choose screenshot** — drag a PNG/JPG into the plugin, or click to pick one. Dimensions are detected.
 2. **Pick a provider** — Claude (Anthropic), Codex (OpenAI), or Gemini. The plugin remembers a separate key for each.
 3. **Enter your API key** — see the table below. Stored locally.
-4. **Set the model** — each provider has an editable default, so you can use any vision-capable model your key supports.
-5. **Recreate in Figma** — the plugin calls the API, validates the result, and builds the frame, generated layers, and the locked screenshot reference, then selects and zooms to it.
+4. **Recreate in Figma** — the plugin auto-selects a vision model your key can use, calls the API, validates the result, and builds the frame, generated layers, and the locked screenshot reference, then selects and zooms to it.
+
+No model picker: the plugin queries the provider for an available vision model
+the first time you use each key, so you never have to choose or update a model id.
 
 ### Providers
 
-| Provider | Get a key | Default model | Cost |
+| Provider | Get a key | Fallback model | Cost |
 | --- | --- | --- | --- |
 | Claude (Anthropic) | [console.anthropic.com](https://console.anthropic.com) | `claude-sonnet-4-6` | Paid |
 | Codex (OpenAI) | [platform.openai.com](https://platform.openai.com) | `gpt-4o` | Paid |
 | Gemini (Google) | [aistudio.google.com/apikey](https://aistudio.google.com/apikey) | `gemini-2.5-flash` | **Free** tier, rate-limited |
 
-The model field is editable. Free model IDs in particular change over time — if a
-default is unavailable, paste a current vision-capable model name for that provider.
+The model is chosen automatically from the provider's live model list. The
+"fallback model" above is only used if that lookup can't run (offline, key
+scope, etc.).
 
 ### Manual / offline alternative (no API key)
 
@@ -192,8 +195,6 @@ dev-only.
   truncated.
 - The plugin calls the provider **APIs** directly; it does not (and cannot) run
   Claude Code, the Codex CLI, or Figma MCP from inside Figma.
-- Model IDs change over time (especially free ones); if a default is unavailable,
-  type a current vision-capable model name into the Model field.
 - The Gemini free tier is rate-limited and generally lower-fidelity than paid
   frontier models — expect rougher results.
 

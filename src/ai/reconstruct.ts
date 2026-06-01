@@ -4,8 +4,17 @@ import { buildReconstructionPrompt } from "../prompt/buildReconstructionPrompt";
 const ANTHROPIC_URL = "https://api.anthropic.com/v1/messages";
 const ANTHROPIC_VERSION = "2023-06-01";
 const OPENAI_URL = "https://api.openai.com/v1/chat/completions";
+const OPENAI_MODELS_URL = "https://api.openai.com/v1/models";
+const ANTHROPIC_MODELS_URL = "https://api.anthropic.com/v1/models";
 const GEMINI_BASE = "https://generativelanguage.googleapis.com/v1beta/models";
 const MAX_TOKENS = 16384;
+
+/** Used when the provider's model list can't be fetched (offline, key scope, etc.). */
+const FALLBACK_MODEL: Record<AiProvider, string> = {
+  anthropic: "claude-sonnet-4-6",
+  openai: "gpt-4o",
+  gemini: "gemini-2.5-flash"
+};
 
 export interface ReconstructParams {
   provider: AiProvider;
@@ -172,6 +181,86 @@ async function callGemini(params: ReconstructParams, prompt: string): Promise<st
     .filter((p) => typeof p.text === "string")
     .map((p) => p.text as string)
     .join("\n");
+}
+
+function pickGemini(models: Array<{ name: string; methods: string[] }>): string | null {
+  const exclude = /(lite|preview|exp|thinking|image|audio|tts|embedding|aqa|learnlm|vision-)/i;
+  const names = models
+    .filter((m) => m.methods.indexOf("generateContent") !== -1)
+    .map((m) => m.name.replace(/^models\//, ""));
+  const byPref = (re: RegExp) => names.filter((n) => re.test(n) && !exclude.test(n)).sort().reverse();
+  const flash = byPref(/^gemini-[\d.]+-flash$/);
+  if (flash.length) return flash[0];
+  const anyFlash = byPref(/flash/);
+  if (anyFlash.length) return anyFlash[0];
+  const anyGemini = byPref(/^gemini-/);
+  return anyGemini[0] || names[0] || null;
+}
+
+function pickOpenAI(ids: string[]): string | null {
+  const usable = ids.filter(
+    (id) => /^(gpt-4o|gpt-4\.1|gpt-4-turbo|gpt-5|chatgpt-4o|o[134])/.test(id) && !/(audio|realtime|transcribe|tts|search|embedding)/.test(id)
+  );
+  return (
+    usable.find((i) => i === "gpt-4o") ||
+    usable.find((i) => /^gpt-4o(-mini)?$/.test(i)) ||
+    usable.find((i) => /^gpt-4\.1/.test(i)) ||
+    usable[0] ||
+    null
+  );
+}
+
+function pickAnthropic(ids: string[]): string | null {
+  return ids.find((i) => /sonnet/.test(i)) || ids.find((i) => /opus/.test(i)) || ids[0] || null;
+}
+
+/**
+ * Picks a currently-available vision model for the provider using the user's key,
+ * so the user never has to choose (or update) a model id. Falls back to a known
+ * default if the model list can't be fetched.
+ */
+export async function resolveModel(provider: AiProvider, apiKey: string): Promise<string> {
+  try {
+    if (provider === "gemini") {
+      const res = await fetch(`${GEMINI_BASE}?key=${encodeURIComponent(apiKey)}`);
+      if (res.ok) {
+        const data = await res.json();
+        const models = Array.isArray(data.models)
+          ? data.models.map((m: { name?: string; supportedGenerationMethods?: string[] }) => ({
+              name: m.name || "",
+              methods: m.supportedGenerationMethods || []
+            }))
+          : [];
+        const picked = pickGemini(models);
+        if (picked) return picked;
+      }
+    } else if (provider === "openai") {
+      const res = await fetch(OPENAI_MODELS_URL, { headers: { authorization: `Bearer ${apiKey}` } });
+      if (res.ok) {
+        const data = await res.json();
+        const ids: string[] = Array.isArray(data.data) ? data.data.map((m: { id: string }) => m.id) : [];
+        const picked = pickOpenAI(ids);
+        if (picked) return picked;
+      }
+    } else {
+      const res = await fetch(ANTHROPIC_MODELS_URL, {
+        headers: {
+          "x-api-key": apiKey,
+          "anthropic-version": ANTHROPIC_VERSION,
+          "anthropic-dangerous-direct-browser-access": "true"
+        }
+      });
+      if (res.ok) {
+        const data = await res.json();
+        const ids: string[] = Array.isArray(data.data) ? data.data.map((m: { id: string }) => m.id) : [];
+        const picked = pickAnthropic(ids);
+        if (picked) return picked;
+      }
+    }
+  } catch {
+    // Network/permission issue — fall through to the default.
+  }
+  return FALLBACK_MODEL[provider];
 }
 
 /**

@@ -1,4 +1,4 @@
-import { reconstruct } from "./ai/reconstruct";
+import { reconstruct, resolveModel } from "./ai/reconstruct";
 import type { AiProvider, PluginToUiMessage, RenderOptions, RenderSummary } from "./messages";
 import { validateSchema } from "./schema/validateSchema";
 
@@ -10,7 +10,6 @@ const preview = document.querySelector<HTMLImageElement>("#preview")!;
 const providerSelect = document.querySelector<HTMLSelectElement>("#provider")!;
 const apiKeyInput = document.querySelector<HTMLInputElement>("#apiKey")!;
 const keyHint = document.querySelector<HTMLElement>("#keyHint")!;
-const modelInput = document.querySelector<HTMLInputElement>("#model")!;
 const recreate = document.querySelector<HTMLButtonElement>("#recreate")!;
 const schemaInput = document.querySelector<HTMLTextAreaElement>("#schemaInput")!;
 const createFromSchema = document.querySelector<HTMLButtonElement>("#createFromSchema")!;
@@ -22,11 +21,6 @@ const summaryEl = document.querySelector<HTMLElement>("#summary")!;
 // Generated layers always sit above a locked screenshot reference, grouped.
 const OPTIONS: RenderOptions = { includeReference: true, group: true, debugLabels: false };
 
-const DEFAULT_MODEL: Record<AiProvider, string> = {
-  anthropic: "claude-sonnet-4-6",
-  openai: "gpt-4o",
-  gemini: "gemini-2.5-flash"
-};
 const KEY_PLACEHOLDER: Record<AiProvider, string> = {
   anthropic: "sk-ant-...",
   openai: "sk-...",
@@ -44,6 +38,8 @@ const PROVIDER_LABEL: Record<AiProvider, string> = {
 };
 
 const keys: Record<AiProvider, string> = { anthropic: "", openai: "", gemini: "" };
+// Model auto-resolved per provider from the key; cached for the session.
+const resolvedModel: Partial<Record<AiProvider, string>> = {};
 
 let imageBytes: Uint8Array | null = null;
 let imageBase64 = "";
@@ -91,7 +87,6 @@ function applyProviderUi(): void {
   apiKeyInput.value = keys[p];
   apiKeyInput.placeholder = KEY_PLACEHOLDER[p];
   keyHint.textContent = KEY_HINT[p];
-  modelInput.value = DEFAULT_MODEL[p];
   updateButton();
 }
 
@@ -174,13 +169,8 @@ async function run(): Promise<void> {
   }
   const p = provider();
   const apiKey = apiKeyInput.value.trim();
-  const model = modelInput.value.trim();
   if (!apiKey) {
     showError("Enter your API key.");
-    return;
-  }
-  if (!model) {
-    showError("Enter a model name.");
     return;
   }
 
@@ -191,6 +181,13 @@ async function run(): Promise<void> {
   parent.postMessage({ pluginMessage: { type: "SAVE_API_KEY", provider: p, key: apiKey } }, "*");
 
   try {
+    let model = resolvedModel[p];
+    if (!model) {
+      showProgress(`Selecting a ${PROVIDER_LABEL[p]} model…`);
+      model = await resolveModel(p, apiKey);
+      resolvedModel[p] = model;
+    }
+
     showProgress(`Asking ${PROVIDER_LABEL[p]} to reconstruct the screenshot…`);
     const json = await reconstruct({
       provider: p,
@@ -227,6 +224,7 @@ async function run(): Promise<void> {
   } catch (error) {
     hideProgress();
     recreate.disabled = false;
+    delete resolvedModel[p]; // re-resolve on the next attempt in case the model was the problem
     showError(error instanceof Error ? error.message : "Something went wrong.");
   }
 }
@@ -291,7 +289,9 @@ dropZone.addEventListener("drop", (event) => {
 
 providerSelect.addEventListener("change", applyProviderUi);
 apiKeyInput.addEventListener("input", () => {
-  keys[provider()] = apiKeyInput.value;
+  const p = provider();
+  keys[p] = apiKeyInput.value;
+  delete resolvedModel[p]; // a new key may belong to a different account
   updateButton();
 });
 recreate.addEventListener("click", () => void run());

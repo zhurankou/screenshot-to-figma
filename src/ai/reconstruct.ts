@@ -4,6 +4,8 @@ import { buildReconstructionPrompt } from "../prompt/buildReconstructionPrompt";
 const ANTHROPIC_URL = "https://api.anthropic.com/v1/messages";
 const ANTHROPIC_VERSION = "2023-06-01";
 const OPENAI_URL = "https://api.openai.com/v1/chat/completions";
+const OPENROUTER_URL = "https://openrouter.ai/api/v1/chat/completions";
+const GEMINI_BASE = "https://generativelanguage.googleapis.com/v1beta/models";
 const MAX_TOKENS = 8192;
 
 export interface ReconstructParams {
@@ -96,39 +98,86 @@ async function callAnthropic(params: ReconstructParams, prompt: string): Promise
     .join("\n");
 }
 
-/** OpenAI Chat Completions API (supports browser CORS with a bearer token). */
-async function callOpenAI(params: ReconstructParams, prompt: string): Promise<string> {
-  const dataUrl = `data:${params.mediaType};base64,${params.base64}`;
-  const response = await postJson(
-    OPENAI_URL,
-    {
-      "content-type": "application/json",
-      authorization: `Bearer ${params.apiKey}`
-    },
-    {
-      model: params.model,
-      max_completion_tokens: MAX_TOKENS,
-      messages: [
-        {
-          role: "user",
-          content: [
-            { type: "text", text: prompt },
-            { type: "image_url", image_url: { url: dataUrl } }
-          ]
-        }
-      ]
-    },
-    "OpenAI"
-  );
+interface ChatOptions {
+  url: string;
+  label: string;
+  /** OpenAI uses max_completion_tokens; OpenRouter normalizes max_tokens. */
+  tokenField: "max_tokens" | "max_completion_tokens";
+  extraHeaders?: Record<string, string>;
+}
 
+/**
+ * OpenAI-style Chat Completions request. Used for both OpenAI and OpenRouter,
+ * which share the same wire format (and both allow browser calls with a bearer token).
+ */
+async function callChatCompletions(opts: ChatOptions, params: ReconstructParams, prompt: string): Promise<string> {
+  const dataUrl = `data:${params.mediaType};base64,${params.base64}`;
+  const headers: Record<string, string> = {
+    "content-type": "application/json",
+    authorization: `Bearer ${params.apiKey}`
+  };
+  if (opts.extraHeaders) {
+    for (const name in opts.extraHeaders) {
+      headers[name] = opts.extraHeaders[name];
+    }
+  }
+
+  const body: Record<string, unknown> = {
+    model: params.model,
+    messages: [
+      {
+        role: "user",
+        content: [
+          { type: "text", text: prompt },
+          { type: "image_url", image_url: { url: dataUrl } }
+        ]
+      }
+    ]
+  };
+  body[opts.tokenField] = MAX_TOKENS;
+
+  const response = await postJson(opts.url, headers, body, opts.label);
   if (!response.ok) {
-    throw new Error(`OpenAI API error: ${await errorDetail(response)}`);
+    throw new Error(`${opts.label} API error: ${await errorDetail(response)}`);
   }
 
   const data = await response.json();
   const choice = Array.isArray(data.choices) ? data.choices[0] : undefined;
   const content = choice && choice.message ? choice.message.content : "";
   return typeof content === "string" ? content : "";
+}
+
+/** Gemini generateContent API (free tier; API key passed as a query param). */
+async function callGemini(params: ReconstructParams, prompt: string): Promise<string> {
+  const url = `${GEMINI_BASE}/${encodeURIComponent(params.model)}:generateContent?key=${encodeURIComponent(params.apiKey)}`;
+  const response = await postJson(
+    url,
+    { "content-type": "application/json" },
+    {
+      contents: [
+        {
+          parts: [
+            { text: prompt },
+            { inlineData: { mimeType: params.mediaType, data: params.base64 } }
+          ]
+        }
+      ],
+      generationConfig: { maxOutputTokens: MAX_TOKENS }
+    },
+    "Gemini"
+  );
+
+  if (!response.ok) {
+    throw new Error(`Gemini API error: ${await errorDetail(response)}`);
+  }
+
+  const data = await response.json();
+  const candidate = Array.isArray(data.candidates) ? data.candidates[0] : undefined;
+  const parts: Array<{ text?: string }> = candidate && candidate.content ? candidate.content.parts || [] : [];
+  return parts
+    .filter((p) => typeof p.text === "string")
+    .map((p) => p.text as string)
+    .join("\n");
 }
 
 /**
@@ -141,7 +190,24 @@ export async function reconstruct(params: ReconstructParams): Promise<string> {
     params.width && params.height ? { width: params.width, height: params.height } : {}
   );
 
-  const text = params.provider === "openai" ? await callOpenAI(params, prompt) : await callAnthropic(params, prompt);
+  let text: string;
+  switch (params.provider) {
+    case "openai":
+      text = await callChatCompletions({ url: OPENAI_URL, label: "OpenAI", tokenField: "max_completion_tokens" }, params, prompt);
+      break;
+    case "openrouter":
+      text = await callChatCompletions(
+        { url: OPENROUTER_URL, label: "OpenRouter", tokenField: "max_tokens", extraHeaders: { "X-Title": "Screenshot to Figma" } },
+        params,
+        prompt
+      );
+      break;
+    case "gemini":
+      text = await callGemini(params, prompt);
+      break;
+    default:
+      text = await callAnthropic(params, prompt);
+  }
 
   if (!text || !text.trim()) {
     throw new Error("The model returned an empty response.");

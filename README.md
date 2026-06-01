@@ -12,11 +12,11 @@ structural reconstruction of the screen.
 ## How it works
 
 ```text
-Screenshot  →  Claude or Codex API  →  UI schema (JSON)  →  Editable Figma frame
+Screenshot  →  AI provider API  →  UI schema (JSON)  →  Editable Figma frame
 ```
 
 1. You choose a screenshot in the plugin.
-2. You pick a provider — **Claude (Anthropic)** or **Codex (OpenAI)** — and enter that provider's API key (stored locally, once each).
+2. You pick a provider — **Claude (Anthropic)**, **Codex (OpenAI)**, **OpenRouter** (free models), or **Gemini** (Google, free tier) — and enter that provider's API key (stored locally, once each).
 3. You click **Recreate in Figma**.
 4. The plugin sends the screenshot to the chosen API, which returns a JSON UI schema.
 5. The plugin validates the schema and renders it into an editable Figma frame,
@@ -35,10 +35,22 @@ well-defined intermediate format; the plugin renders it with the Figma Plugin AP
 ## Using it
 
 1. **Choose screenshot** — drag a PNG/JPG into the plugin, or click to pick one. Dimensions are detected.
-2. **Pick a provider** — Claude (Anthropic) or Codex (OpenAI). The plugin remembers a separate key for each.
-3. **Enter your API key** — [console.anthropic.com](https://console.anthropic.com) for Claude, [platform.openai.com](https://platform.openai.com) for OpenAI. Stored locally.
-4. **Set the model** — defaults to `claude-sonnet-4-6` (Anthropic) or `gpt-4o` (OpenAI). The field is editable, so you can use any vision-capable model your key supports.
+2. **Pick a provider** — Claude (Anthropic), Codex (OpenAI), OpenRouter, or Gemini. The plugin remembers a separate key for each.
+3. **Enter your API key** — see the table below. Stored locally.
+4. **Set the model** — each provider has an editable default, so you can use any vision-capable model your key supports.
 5. **Recreate in Figma** — the plugin calls the API, validates the result, and builds the frame, generated layers, and the locked screenshot reference, then selects and zooms to it.
+
+### Providers
+
+| Provider | Get a key | Default model | Cost |
+| --- | --- | --- | --- |
+| Claude (Anthropic) | [console.anthropic.com](https://console.anthropic.com) | `claude-sonnet-4-6` | Paid |
+| Codex (OpenAI) | [platform.openai.com](https://platform.openai.com) | `gpt-4o` | Paid |
+| OpenRouter | [openrouter.ai/keys](https://openrouter.ai/keys) | `meta-llama/llama-3.2-11b-vision-instruct:free` | **Free** models available (`:free`), rate-limited |
+| Gemini (Google) | [aistudio.google.com/apikey](https://aistudio.google.com/apikey) | `gemini-2.0-flash` | **Free** tier, rate-limited |
+
+The model field is editable. Free model IDs in particular change over time — if a
+default is unavailable, paste a current vision-capable model name for that provider.
 
 ### Manual / offline alternative (no API key)
 
@@ -156,8 +168,9 @@ npm run samples  # regenerate samples/ from src/
 ```
 
 The only runtime dependency is the provider API (`manifest.json` allows
-`https://api.anthropic.com` and `https://api.openai.com`). There is no backend
-and no bundled npm runtime dependency — the toolchain is dev-only.
+`api.anthropic.com`, `api.openai.com`, `openrouter.ai`, and
+`generativelanguage.googleapis.com`). There is no backend and no bundled npm
+runtime dependency — the toolchain is dev-only.
 
 ## Load in Figma
 
@@ -178,10 +191,12 @@ and no bundled npm runtime dependency — the toolchain is dev-only.
 - Each recreate is one API call billed to your key; larger screenshots cost
   more. The response is capped at 8192 tokens, so very dense screens may be
   truncated.
-- The plugin calls the Anthropic / OpenAI **APIs** directly; it does not (and
-  cannot) run Claude Code, the Codex CLI, or Figma MCP from inside Figma.
-- OpenAI model IDs change over time; if `gpt-4o` is unavailable on your account,
+- The plugin calls the provider **APIs** directly; it does not (and cannot) run
+  Claude Code, the Codex CLI, or Figma MCP from inside Figma.
+- Model IDs change over time (especially free ones); if a default is unavailable,
   type a current vision-capable model name into the Model field.
+- Free tiers (OpenRouter `:free` models, Gemini free tier) are rate-limited and
+  generally lower-fidelity than paid frontier models — expect rougher results.
 
 ## Roadmap
 

@@ -24,18 +24,30 @@ const OPTIONS: RenderOptions = { includeReference: true, group: true, debugLabel
 
 const DEFAULT_MODEL: Record<AiProvider, string> = {
   anthropic: "claude-sonnet-4-6",
-  openai: "gpt-4o"
+  openai: "gpt-4o",
+  openrouter: "meta-llama/llama-3.2-11b-vision-instruct:free",
+  gemini: "gemini-2.0-flash"
 };
 const KEY_PLACEHOLDER: Record<AiProvider, string> = {
   anthropic: "sk-ant-...",
-  openai: "sk-..."
+  openai: "sk-...",
+  openrouter: "sk-or-...",
+  gemini: "AIza..."
 };
 const KEY_HINT: Record<AiProvider, string> = {
   anthropic: "Stored locally on this machine. Get one at console.anthropic.com. Calls are billed to your key.",
-  openai: "Stored locally on this machine. Get one at platform.openai.com. Calls are billed to your key."
+  openai: "Stored locally on this machine. Get one at platform.openai.com. Calls are billed to your key.",
+  openrouter: "Stored locally. Free key at openrouter.ai/keys. Free models (\":free\") have rate limits.",
+  gemini: "Stored locally. Free key at aistudio.google.com/apikey. The free tier has rate limits."
+};
+const PROVIDER_LABEL: Record<AiProvider, string> = {
+  anthropic: "Claude",
+  openai: "OpenAI",
+  openrouter: "OpenRouter",
+  gemini: "Gemini"
 };
 
-const keys: Record<AiProvider, string> = { anthropic: "", openai: "" };
+const keys: Record<AiProvider, string> = { anthropic: "", openai: "", openrouter: "", gemini: "" };
 
 let imageBytes: Uint8Array | null = null;
 let imageBase64 = "";
@@ -44,7 +56,11 @@ let imageWidth = 0;
 let imageHeight = 0;
 
 function provider(): AiProvider {
-  return providerSelect.value === "openai" ? "openai" : "anthropic";
+  const value = providerSelect.value;
+  if (value === "openai" || value === "openrouter" || value === "gemini") {
+    return value;
+  }
+  return "anthropic";
 }
 
 function escapeHtml(value: string): string {
@@ -179,7 +195,7 @@ async function run(): Promise<void> {
   parent.postMessage({ pluginMessage: { type: "SAVE_API_KEY", provider: p, key: apiKey } }, "*");
 
   try {
-    showProgress(`Asking ${p === "openai" ? "OpenAI" : "Claude"} to reconstruct the screenshot…`);
+    showProgress(`Asking ${PROVIDER_LABEL[p]} to reconstruct the screenshot…`);
     const json = await reconstruct({
       provider: p,
       apiKey,
@@ -293,6 +309,8 @@ window.onmessage = (event: MessageEvent<{ pluginMessage: PluginToUiMessage }>) =
   if (message.type === "API_KEYS") {
     keys.anthropic = message.keys.anthropic;
     keys.openai = message.keys.openai;
+    keys.openrouter = message.keys.openrouter;
+    keys.gemini = message.keys.gemini;
     apiKeyInput.value = keys[provider()];
     updateButton();
   }

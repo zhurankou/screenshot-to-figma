@@ -1,11 +1,13 @@
 import { createFrameFromSchema } from "./figma/createFrame";
-import type { PluginToUiMessage, UiToPluginMessage } from "./messages";
+import type { AiProvider, PluginToUiMessage, UiToPluginMessage } from "./messages";
 import { validateSchema } from "./schema/validateSchema";
 
-const STORAGE_KEYS = {
+const STORAGE_KEYS: Record<AiProvider, string> = {
   anthropic: "anthropic-api-key",
-  openai: "openai-api-key"
-} as const;
+  openai: "openai-api-key",
+  openrouter: "openrouter-api-key",
+  gemini: "gemini-api-key"
+};
 
 figma.showUI(__html__, { width: 420, height: 640, themeColors: true });
 
@@ -44,9 +46,15 @@ figma.ui.onmessage = async (message: UiToPluginMessage) => {
   }
 
   if (message.type === "GET_API_KEYS") {
-    const anthropic = (await figma.clientStorage.getAsync(STORAGE_KEYS.anthropic)) as string | undefined;
-    const openai = (await figma.clientStorage.getAsync(STORAGE_KEYS.openai)) as string | undefined;
-    post({ type: "API_KEYS", keys: { anthropic: anthropic || "", openai: openai || "" } });
+    const keys: Record<AiProvider, string> = { anthropic: "", openai: "", openrouter: "", gemini: "" };
+    const providers = Object.keys(STORAGE_KEYS) as AiProvider[];
+    await Promise.all(
+      providers.map(async (provider) => {
+        const value = (await figma.clientStorage.getAsync(STORAGE_KEYS[provider])) as string | undefined;
+        keys[provider] = value || "";
+      })
+    );
+    post({ type: "API_KEYS", keys });
     return;
   }
 
